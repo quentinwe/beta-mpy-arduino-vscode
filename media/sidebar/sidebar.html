@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="theme.css" />
+    <link rel="stylesheet" href="sidebar.css" />
+  </head>
+  <body>
+    <div class="sidebar-fixed">
+      <div class="tab-bar" id="tab-bar">
+        <button
+          class="fullwidth-btn"
+          id="tab-add-btn"
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+        >
+          Add Connection
+        </button>
+        <ul class="tab-add-menu" id="tab-add-menu" role="listbox" hidden></ul>
+      </div>
+
+      <div class="section-header">
+        <div id="active-board-name"></div>
+        <span id="status-indicator" class="status-indicator">
+          <span id="status-dot" class="status-dot"></span>
+          <span id="status-text">Disconnected</span>
+          <span
+            id="status-info"
+            class="info"
+            data-tooltip="No board selected. Open a new tab to connect."
+            ><img src="tooltip.svg" class="info-icon"
+          /></span>
+        </span>
+      </div>
+    </div>
+
+    <div class="sidebar-scroll">
+      <div class="button-group hidden-when-disconnected">
+        <button id="run-btn" class="fullwidth-btn">
+          <img src="play.svg" alt="" aria-hidden="true" class="btn-icon" />Run
+          current File
+        </button>
+        <button id="run-selection-btn" class="fullwidth-btn">
+          <img
+            src="run-selected.svg"
+            alt=""
+            aria-hidden="true"
+            class="btn-icon"
+          />Run Selection
+        </button>
+        <button id="connect-btn" class="fullwidth-btn">
+          <img
+            src="console.svg"
+            alt=""
+            aria-hidden="true"
+            class="btn-icon"
+          />Open REPL Console
+        </button>
+        <button id="stop-btn" class="fullwidth-btn">
+          <img src="stop.svg" alt="" aria-hidden="true" class="btn-icon" />Stop
+          Board
+        </button>
+        <button id="soft-reset-btn" class="fullwidth-btn">
+          <img src="reset.svg" alt="" aria-hidden="true" class="btn-icon" />Soft
+          Reset
+        </button>
+      </div>
+
+      <hr />
+
+      <h5 class="section-title">Workspace</h5>
+      <div id="workspace-tree"></div>
+
+      <div class="mount-container hidden-when-disconnected">
+        <button id="mount-btn" class="fullwidth-btn">Mount Workspace</button>
+        <span id="mount-info" class="info">
+          <img src="tooltip.svg" class="info-icon" />
+        </span>
+      </div>
+
+      <hr class="hidden-when-disconnected" />
+
+      <h5 class="section-title hidden-when-disconnected">Board Files</h5>
+      <div id="boardfiles-tree" class="hidden-when-disconnected"></div>
+
+      <hr />
+
+      <div class="hidden-when-disconnected">
+        <h5 class="section-title">Libraries</h5>
+        <p class="section-sub">Installed on Board (/lib)</p>
+        <ul id="installed-list" class="tree"></ul>
+        <div class="btn-row">
+          <button id="uninstall-btn" class="secondary" disabled>
+            Uninstall
+          </button>
+        </div>
+
+        <div class="collapsable">
+          <button
+            class="collapsable-toggle"
+            id="lib-install-toggle"
+            type="button"
+          >
+            <span class="collapsable-chevron"></span>Install Libraries
+          </button>
+          <div class="collapsable-body" id="lib-install-body" hidden>
+            <p class="section-sub">Available Packages</p>
+            <input
+              type="text"
+              id="library-search"
+              placeholder="Search..."
+              disabled
+            />
+            <ul id="library-list" class="tree"></ul>
+            <div class="btn-row">
+              <button id="install-btn" disabled>Install</button>
+            </div>
+            <p class="section-sub">Custom URL</p>
+            <div class="custom-install-row">
+              <input
+                type="text"
+                id="custom-url-input"
+                placeholder="e.g. github:johndoe/player@v1.2.0"
+              />
+              <button id="custom-install-btn">Install</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="collapsable">
+        <button
+          class="collapsable-toggle"
+          id="advanced-options-toggle"
+          type="button"
+        >
+          <span class="collapsable-chevron"></span>Code Support
+        </button>
+        <div class="collapsable-body" id="advanced-options-body" hidden>
+          <div class="button-group">
+            <div id="codesupport-list"></div>
+            <button
+              id="gen-lib-stubs-btn"
+              class="fullwidth-btn hidden-when-disconnected"
+            >
+              ↺ Regenerate Library Code Support
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="sidebar.js"></script>
+  </body>
+</html>

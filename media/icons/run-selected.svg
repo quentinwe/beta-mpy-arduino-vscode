@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg 
+    width="32px" 
+    height="32px" 
+    viewBox="-3 0 28 28" 
+    version="1.1" 
+    xmlns="http://www.w3.org/2000/svg">
+
+    <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        
+        <!-- Left bracket -->
+        <polyline points="2,6 0,14 2,22" />
+        
+        <!-- Right bracket -->
+        <polyline points="20,6 22,14 20,22" />
+        
+        <!-- Play triangle (converted to outline style) -->
+        <polygon points="7,6 17,14 7,22" />
+
+    </g>
+</svg>
