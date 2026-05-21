@@ -2,7 +2,7 @@
   "name": "beta-micropython-for-arduino",
   "displayName": "[Beta] MicroPython for Arduino",
   "description": "MicroPython development tools for Arduino boards",
-  "publisher": "Quentin Weber, Silvan Bollhalder",
+  "publisher": "BA26-mpy-vscode",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.109.0"
