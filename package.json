@@ -3,7 +3,7 @@
   "displayName": "[Beta] MicroPython for Arduino",
   "description": "MicroPython development tools for Arduino boards",
   "publisher": "BA26-mpy-vscode",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.109.0"
   },
@@ -113,7 +113,7 @@
     "upy-package": "github:arduino/upy-package"
   },
   "overrides": {
-    "serialport": "^12.0.0",
-    "@serialport/bindings-cpp": "^12.0.0"
+    "serialport": "^13.0.0",
+    "@serialport/bindings-cpp": "^13.0.1"
   } 
 }
