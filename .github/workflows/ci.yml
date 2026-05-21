@@ -222,4 +222,6 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: |
-          npx @vscode/vsce publish --packagePath ${{ needs.package_extension.outputs.vsix_file }}
+          VSIX=$(ls *.vsix)
+          echo "Publishing ${VSIX}..."
+          npx @vscode/vsce publish --packagePath "${VSIX}"
