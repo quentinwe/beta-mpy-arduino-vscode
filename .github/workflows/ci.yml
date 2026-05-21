@@ -149,21 +149,30 @@ jobs:
       vsix_file: ${{ steps.package.outputs.vsix_file }}
     steps:
       - uses: actions/checkout@v4
-
+  
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
-
+  
       - run: npm ci
-
+  
+      # Fehlende native Binaries für alle Plattformen herunterladen
+      - name: Download native bindings for all platforms
+        run: |
+          cd node_modules/@serialport/bindings-cpp
+          npx prebuild-install --platform win32 --arch x64   --tag-prefix v || true
+          npx prebuild-install --platform win32 --arch arm64 --tag-prefix v || true
+          npx prebuild-install --platform darwin --arch x64  --tag-prefix v || true
+          npx prebuild-install --platform darwin --arch arm64 --tag-prefix v || true
+  
       - name: Package extension
         id: package
         run: |
           npm run package
           VSIX=$(ls *.vsix)
           echo "vsix_file=${VSIX}" >> "$GITHUB_OUTPUT"
-
+  
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4
         with:
