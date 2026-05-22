@@ -33,6 +33,26 @@ async function ensurePythonExtension(): Promise<void> {
 }
 
 export function activate(context: vscode.ExtensionContext): void {
+  const platform = process.platform;
+  const arch = process.arch;
+  console.log(`Activate called for ${platform}-${arch}`);
+
+  if (platform === "win32" && arch === "arm64") {
+    vscode.window
+      .showErrorMessage(
+        "MicroPython for Arduino requires the x64 version of Visual Studio Code on Windows. " +
+          "ARM64 is not supported.",
+        "Download VS Code x64",
+      )
+      .then((selection) => {
+        if (selection === "Download VS Code x64") {
+          vscode.env.openExternal(
+            vscode.Uri.parse("https://code.visualstudio.com/download"),
+          );
+        }
+      });
+    return; // stop activation
+  }
   ensurePythonExtension();
 
   const connectionManager = new ConnectionManager();

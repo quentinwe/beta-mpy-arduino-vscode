@@ -3,13 +3,13 @@
   "displayName": "[Beta] MicroPython for Arduino",
   "description": "MicroPython development tools for Arduino boards",
   "publisher": "BA26-mpy-vscode",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.109.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/quentinwe/beta-mpy-arduino-vscode.git"
+    "url": "https://github.com/quentinwe/beta-mpy-arduino-vscode"
   },
   "icon": "media/icon_128x128.png",
   "categories": [
@@ -101,7 +101,7 @@
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.39.2",
     "jest": "^29.7.0",
-    "jest-junit": "^16.0.0",
+    "jest-junit": "^17.0.0",
     "jscpd": "^4.0.5",
     "prettier": "^3.5.3",
     "ts-jest": "^29.3.1",
@@ -111,9 +111,5 @@
   "dependencies": {
     "micropython.js": "github:arduino/micropython.js",
     "upy-package": "github:arduino/upy-package"
-  },
-  "overrides": {
-    "serialport": "^13.0.0",
-    "@serialport/bindings-cpp": "^13.0.1"
-  } 
+  }
 }

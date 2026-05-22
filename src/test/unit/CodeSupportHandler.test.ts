@@ -34,8 +34,12 @@ function setupFs({
   const settingsPath = path.join(WS, ".vscode", "settings.json");
 
   (fs.existsSync as jest.Mock).mockImplementation((p: string) => {
-    if (p === codeSupportRoot) return codeSupportDirs.length > 0;
-    if (p === settingsPath) return settingsJson !== undefined;
+    if (p === codeSupportRoot) {
+      return codeSupportDirs.length > 0;
+    }
+    if (p === settingsPath) {
+      return settingsJson !== undefined;
+    }
     return false;
   });
 
