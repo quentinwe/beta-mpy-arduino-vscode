@@ -13,33 +13,25 @@ Simple to use MicroPython extension for Arduino microcontrollers.
 3.  Open local file
 4.  **Run current file**
 
-<video width="auto" height="auto" autoplay loop controls>
-  <source src="assets/gettingstarted.mp4" type="video/mp4">
-</video>
+![Connect and Run Demo](assets/gettingstarted.gif)
 
 1.  Open REPL Console for direct communication
 2.  Soft Reset to restart the board and execute main.py if available
 3.  <strong>Doubleclick Boardfile to edit</strong>
 4.  Ctrl+S or Save Button to upload your changes
 
-<video width="auto" height="auto" autoplay loop controls>
-  <source src="assets/repl_edit-boardfile.mp4" type="video/mp4">
-</video>
+![Edit Boardfile Demo](assets/repl_edit-boardfile.gif)
 
 1.  Files with local dependencies don't run on the board
 2.  **Mount Workspace** connects board to local workspace
 3.  Execute Soft Reset after changes in local dependencies
 
-<video width="auto" height="auto" autoplay loop controls>
-  <source src="assets/mount.mp4" type="video/mp4">
-</video>
+![Mount Demo](assets/mount.gif)
 
 1.  Install library
 2.  Use library with code completion
 
-<video width="auto" height="auto" autoplay loop controls>
-  <source src="assets/library-code-support.mp4" type="video/mp4">
-</video>
+![Library Demo](assets/library-code-support.gif)
 
 ## Supported Boards
 
