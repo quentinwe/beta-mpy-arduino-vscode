@@ -1,6 +1,45 @@
 # MicroPython for Arduino
 
-A VS Code extension for MicroPython development on Arduino boards. Developed as a bachelor's thesis at OST – Eastern Switzerland University of Applied Sciences.
+Simple to use MicroPython extension for Arduino microcontrollers.
+
+## Requirements
+
+- Python 3.x (must be available on your PATH) [Install](https://www.python.org/downloads/)
+
+## Getting Started 
+
+1.  Open MicroPython for Arduino sidebar
+2.  **Connect** your microcontroller
+3.  Open local file
+4.  **Run current file**
+
+<video width="auto" height="auto" autoplay loop controls>
+  <source src="assets/gettingstarted.mp4" type="video/mp4">
+</video>
+
+1.  Open REPL Console for direct communication
+2.  Soft Reset to restart the board and execute main.py if available
+3.  <strong>Doubleclick Boardfile to edit</strong>
+4.  Ctrl+S or Save Button to upload your changes
+
+<video width="auto" height="auto" autoplay loop controls>
+  <source src="assets/repl_edit-boardfile.mp4" type="video/mp4">
+</video>
+
+1.  Files with local dependencies don't run on the board
+2.  **Mount Workspace** connects board to local workspace
+3.  Execute Soft Reset after changes in local dependencies
+
+<video width="auto" height="auto" autoplay loop controls>
+  <source src="assets/mount.mp4" type="video/mp4">
+</video>
+
+1.  Install library
+2.  Use library with code completion
+
+<video width="auto" height="auto" autoplay loop controls>
+  <source src="assets/library-code-support.mp4" type="video/mp4">
+</video>
 
 ## Supported Boards
 
@@ -8,55 +47,49 @@ A VS Code extension for MicroPython development on Arduino boards. Developed as 
 - Arduino Nano RP2040 Connect
 - Arduino Giga R1
 
-## Requirements
+## Dependencies
 
-- VS Code
-- Python 3.x (must be available on your PATH)
-- `mpremote` — installed automatically by the extension on first use, or manually: `pip install mpremote`
-
-## Getting Started
-
-### 1. Open the Extension
-
-After installing, look for the **MicroPython for Arduino** icon in the VS Code Activity Bar (the icon column on the far left). Click it to open the sidebar panel.
-
-![Sidebar Panel](media/images/extension_sidebar.png)
-
-### 2. Connect to Your Board
-
-1. Plug your Arduino board into your computer via USB.
-2. In the sidebar, select your board's serial port from the dropdown.
-3. Click **Connect**. Supported boards are detected automatically by their USB IDs.
-
-### 3. Run a Script
-
-1. Open a `.py` file in VS Code.
-2. Click **Run current File** in the sidebar.
-3. Script output appears live in the **Output** panel (`View → Output`, then select _MicroPython_ in the dropdown).
+- `micropython.js` serial communication - [Github Repository](https://github.com/arduino/micropython.js)
+- `upy-packager` library installation - [Github Repository](https://github.com/arduino/upy-packager)
+- `mpremote` mount - [Docs](https://docs.micropython.org/en/latest/reference/mpremote.html)
+- `pylance` IntelliSense - [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance)
 
 ## Features
 
 ### Run Scripts
 
 - **Run current File**: runs the currently open `.py` file directly on the board
-- **Run Selection**: runs the selected code snippet without saving a file
-- Script output is streamed live to the VS Code Output panel
+- **Run Selection**: runs the selected code snippet
+- Input and Output via Terminal
 
 ### Control the Board
 
 - **Stop Board**: interrupts a running script (sends Ctrl+C)
-- **Soft Reset**: restarts the MicroPython runtime without physically disconnecting the board
+- **Soft Reset**: restarts the MicroPython runtime without physically disconnecting the board (sends Ctrl+D)
 - **Open REPL Console**: opens an interactive Python terminal connected to the board
 
 ### Board File System
 
 - Browse files and folders on the board
-- Open a board file in VS Code, edit it locally, and upload it back with the upload button
+- Open a board file (doubleclick) in Editor, edit it locally, and upload it back with the upload button or save command
 - Rename, delete, and create files directly on the board
+- Drag and drop move
+
+### Workspace
+
+- Shows workspace with most important actions
+- Drag and drop move
+
+### Concurrent Boards
+
+- Extension allow multiple connections
+- Connections handled via tabs. **+** connect, **x** disconnect
+- Switch tab to access other board
 
 ### Mount Workspace
 
-**Mount Workspace** connects your local VS Code workspace folder directly to the board's filesystem using `mpremote`. While mounted, files you save locally are immediately visible and executable on the board, no manual upload step needed.
+- **Mount Workspace** connects your local VS Code workspace folder directly to the board's filesystem using `mpremote mount`. 
+- While mounted, files you save locally are immediately visible and executable on the board, no manual upload step needed.
 
 **How to use:**
 
@@ -64,20 +97,10 @@ After installing, look for the **MicroPython for Arduino** icon in the VS Code A
 2. Run files or interact with the REPL directly in that terminal.
 3. When done, click **Unmount** (the same button) to cleanly disconnect.
 
-<table>
-  <tr>
-    <td><img src="media/images/mount.png" width="300"/></td>
-    <td><img src="media/images/mount_active.png" width="300"/></td>
-  </tr>
-</table>
-
 **While mount is active:**
 
-- **Library install and uninstall are disabled.** To manage libraries, unmount first.
-- The standalone REPL button is disabled (the mount terminal already provides a REPL).
-- You can still Stop and Soft Reset the board from the sidebar.
-
-> **Why is Library disabled during mount?** The mount session occupies the serial connection exclusively. Library installation requires its own serial communication, so both cannot run at the same time. Unmount first, install your libraries, then mount again.
+- **Boardfile actions, Library install and uninstall are disabled.** To manage libraries, unmount first.
+- **Soft Reset** will remount the workspace and remove already imported dependencies.
 
 ### Manage Libraries
 
@@ -89,29 +112,32 @@ After installing, look for the **MicroPython for Arduino** icon in the VS Code A
 
 - Set up board-specific MicroPython module stubs (`machine`, `network`, etc.) for Pylance/Pyright
 - Generate type hints and autocomplete for installed libraries
+- Overview over library code support in current workspace
+- Regenerate Code Support in your workspace for current board
 
 ### AI Support
 
-- Open Chat with instructions for Library and Board Code
-- If you're using another AI that has access to your workspace, make sure to add `.mpy_codesupport/ai-instructions.md` to the context for better results.
-- AI with no access to workspace: add context (which board, sensors, libraries and your goal)
-
-## Extension Settings
-
-| Setting                                                    | Default | Description                                                                                                    |
-| ---------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
-| `beta-micropython-for-arduino.autoInstallBoardCodeSupport` | `true`  | Automatically installs board-specific code support (autocomplete and type hints) when a board port is selected |
+- **GitHub Copilot** and **Claude Code** are supported. 
+- Can be activated in extension settings. 
+- `.github/copilot-instructions.md` is automatically generated with instructions on how to find dependencies that are in the current workspace. 
+- For other AIs just copy the generated instructions into their instruction file.
 
 ## Troubleshooting
 
-**`mpremote` not found / installation fails**
+**`mpremote` not found / installation fails.**
 Run `pip install mpremote` manually in your terminal, then reload VS Code.
 
-**Python not found**
+**Python not found.**
 Make sure Python is installed and added to your system PATH. You can verify with `python --version` in a terminal.
 
-## Release Notes
+**Win 32 ARM64 does not work.**
+Install the x64 version of Visual Studio Code to use this extension.
 
-### 0.0.1
+## Extension Settings
 
-Initial release.
+| Setting                                               | Default | Description                                                                                                    |
+| ---------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| Auto Install Board Code Support | `true`  | Automatically installs board-specific code support (autocomplete and type hints) when a board port is selected |
+| Generate CLAUDE.md | `false`  | Generates instructions for Claude Code if true |
+| Generate Copilot instructions | `true`  | Generates instructions for Github Copilot if true |
+
