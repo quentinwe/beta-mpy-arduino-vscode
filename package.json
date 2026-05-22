@@ -79,7 +79,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "package": "npx vsce package --baseContentUrl https://gitlab.ost.ch/mpy/beta-micropython-for-arduino/-/raw/main",
+    "package": "npx @vscode/vsce package",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
@@ -111,5 +111,9 @@
   "dependencies": {
     "micropython.js": "github:arduino/micropython.js",
     "upy-package": "github:arduino/upy-package"
+  },
+  "overrides": {
+    "serialport": "^13.0.0",
+    "@serialport/bindings-cpp": "^13.0.1"
   }
 }

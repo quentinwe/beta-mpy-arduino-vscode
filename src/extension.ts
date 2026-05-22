@@ -51,7 +51,7 @@ export function activate(context: vscode.ExtensionContext): void {
           );
         }
       });
-    return; // stop activation
+    // return;
   }
   ensurePythonExtension();
 
