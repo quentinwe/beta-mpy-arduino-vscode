@@ -3,6 +3,7 @@
 ## Setup
 
 ### Prerequisites
+
 - Node.js 22.x
 - VS Code ^1.109.0
 - Python 3.x (required for mpremote and stubs)
@@ -26,26 +27,26 @@ All message types are defined in `src/types/messages.ts`.
 
 ### Messages: Webview → Extension
 
-| Category | Examples |
-|---|---|
-| Connection | `getPorts`, `openPort`, `closePort` |
-| Board actions | `runFile`, `stopFile`, `softReset` |
-| Workspace files | `ws_openFile`, `ws_delete`, `ws_move` |
-| Board files | `bf_openFile`, `bf_delete`, `bf_move` |
-| Mount | `toggleMount` |
-| Libraries | `installLibrary`, `getLibraries` |
-| Code support | `activateCodeSupport`, `generateStubs` |
+| Category        | Examples                               |
+| --------------- | -------------------------------------- |
+| Connection      | `getPorts`, `openPort`, `closePort`    |
+| Board actions   | `runFile`, `stopFile`, `softReset`     |
+| Workspace files | `ws_openFile`, `ws_delete`, `ws_move`  |
+| Board files     | `bf_openFile`, `bf_delete`, `bf_move`  |
+| Mount           | `toggleMount`                          |
+| Libraries       | `installLibrary`, `getLibraries`       |
+| Code support    | `activateCodeSupport`, `generateStubs` |
 
 ### Messages: Extension → Webview
 
-| Category | Examples |
-|---|---|
-| Initialization | `init` |
-| Board status | `boardState`, `ports`, `disconnected` |
-| Workspace tree | `workspaceFiles`, `ws_nodeCreated` |
-| Board tree | `boardFiles`, `bf_nodeDeleted` |
-| Libraries | `installedLibraries`, `installResult` |
-| Code support | `codeSupport` |
+| Category       | Examples                              |
+| -------------- | ------------------------------------- |
+| Initialization | `init`                                |
+| Board status   | `boardState`, `ports`, `disconnected` |
+| Workspace tree | `workspaceFiles`, `ws_nodeCreated`    |
+| Board tree     | `boardFiles`, `bf_nodeDeleted`        |
+| Libraries      | `installedLibraries`, `installResult` |
+| Code support   | `codeSupport`                         |
 
 ### Adding a New Board Operation
 
@@ -99,6 +100,8 @@ The manifest solves a key problem: `upy-package` places all library files into a
 }
 ```
 
+There is no update mechanism. If a newer version of a library exists, the user must manually uninstall and reinstall it. The extension has no way to detect that an update is available.
+
 **Entry point:** Library installation and uninstallation logic is in `src/device/operation/LibraryOperations.ts`. Manifest read/write is in `src/device/operation/ReadManifestOperation.ts` and `src/device/manifest.ts`.
 
 ---
@@ -115,15 +118,28 @@ Note: Libraries with an empty URL in the manifest (e.g. built-in modules like `z
 
 ### Mount
 
-Mount binds the local workspace directly onto the board, so scripts can be executed without uploading them first. On activation, `main.py` on the board is temporarily renamed to avoid conflicts. Mount runs via `mpremote` in a separate VS Code terminal. On deactivation, `main.py` is renamed back. `mpremote` is automatically installed via `pip` when the extension is first activated.
+Mount binds the local workspace directly onto the board, so scripts can be executed without uploading them first. Mount runs via `mpremote` in a separate VS Code terminal. On deactivation, `main.py` is renamed back. `mpremote` is automatically installed via `pip` when the extension is first activated.
+
+On activation, `main.py` on the board is renamed to `mainWhileMount.py`. This is an `mpremote` limitation: `mpremote` cannot start a mount session if `main.py` already exists on the board. There is no workaround for this; the rename is mandatory.
 
 The following restrictions apply while mount is active:
+
 - Board file operations (read, write, delete) are disabled
 - Library installation is disabled
 - VS Code must not be closed while mount is active. The `mpremote` process continues running in the background and blocks the serial port. On the next VS Code launch, the port will be blocked until `Ctrl-X` is pressed manually in the terminal
 - Mount must be deactivated via the toggle button or `Ctrl-X` in the terminal. If the terminal is forcefully closed, the extension attempts to clean up mount automatically
 
+**Why graceful shutdown cannot be caught:** VS Code terminates all terminals before calling the `deactivate()` hook in `src/extension.ts`. Since the mount process runs inside a terminal, it is already killed by the time `deactivate()` is invoked. A clean unmount is therefore not possible. VS Code provides no API that would allow the extension to run cleanup before terminals are shut down. This is a VS Code platform limitation with no known programmatic workaround.
+
 **Entry point:** Mount logic is in `src/device/MountManager.ts` and `src/device/operation/ActivateMountOperation.ts`.
+
+---
+
+### Workspace File Tree
+
+The workspace file tree is built by reading the local filesystem recursively with Node.js `fs.readdirSync`. The following directories are always excluded from the tree: `node_modules`, `.git`, `__pycache__`, `dist`, `out`, `.vscode`, and `.board_cache`. The result is a `FileNode` tree where each node's `id` is the absolute file path on disk. This path is passed directly to all file operations (open, rename, delete, move, upload). Folders appear before files; both are sorted alphabetically within each level.
+
+**Entry point:** `src/webview/handlers/WorkspaceFileHandler.ts`, function `buildWorkspaceTree`.
 
 ---
 
@@ -139,9 +155,10 @@ When a board file is opened, it is downloaded to the local `.board_cache/` folde
 
 The user can run scripts directly from the workspace or from the board. Output is streamed live to a VS Code terminal. Stop interrupts a running script; Soft Reset restarts MicroPython on the board. The interactive REPL opens a VS Code terminal with direct access to the board's Python console.
 
-When running scripts, the behaviour differs depending on whether mount is active:
-- **Without mount:** The file is temporarily uploaded to the board and executed there
-- **With mount:** The file is executed directly from the local workspace, no upload needed
+When running scripts, the behaviour differs depending on what is being run and whether mount is active:
+- **Workspace file (without mount):** The file's source code is read locally and sent directly to the board via the Raw REPL protocol as a string. No file is uploaded to the board.
+- **Workspace file (with mount):** The file is executed via the active mount REPL using paste mode: `exec(open("relative/path").read())`. If the file is outside the mounted folder, the source code is sent as a code block instead.
+- **Board file:** A short Python snippet is sent via Raw REPL that reads and executes the file from the board's own filesystem: `exec(open(path).read(), globals())`.
 
 **Entry point:** Script execution is in `src/device/operation/RunFileOperation.ts` and `src/device/operation/RunCodeOperation.ts`. The REPL is implemented in `src/device/ReplTerminal.ts`.
 
@@ -167,13 +184,13 @@ The serial port is an exclusive resource, only one operation can hold it at a ti
 
 The project uses GitLab CI (`gitlab-ci.yml`). The following stages run on every push:
 
-| Stage | Jobs | What it does |
-|---|---|---|
-| build | `install_dependencies` | `npm ci` |
-| test | `unit_tests`, `integration_tests` | Jest unit and integration tests |
+| Stage   | Jobs                               | What it does                                          |
+| ------- | ---------------------------------- | ----------------------------------------------------- |
+| build   | `install_dependencies`             | `npm ci`                                              |
+| test    | `unit_tests`, `integration_tests`  | Jest unit and integration tests                       |
 | metrics | `quality_linting`, `quality_jscpd` | `typecheck`, `lint`, `prettier`, duplicate code check |
-| package | `package_extension` | Builds `.vsix`, only on `main` branch or git tag |
-| release | `create_release` | Creates a GitLab release, only on git tag |
+| package | `package_extension`                | Builds `.vsix`, only on `main` branch or git tag      |
+| release | `create_release`                   | Creates a GitLab release, only on git tag             |
 
 Before opening a merge request, make sure `typecheck`, `lint` and `prettier` pass locally. These are the most common CI failures.
 
@@ -210,6 +227,12 @@ Launch the extension with **F5** and connect a physical board.
 **Mount and closing VS Code**
 If VS Code is closed while mount is active, the `mpremote` process continues running in the background and blocks the serial port. On the next launch, the port is unavailable until `Ctrl-X` is pressed manually in the terminal.
 
-**Code support for transitive dependencies**
-If a library automatically installs another library as a dependency, that dependency is not tracked in the manifest. No code support is generated for it.
+**Shared library dependencies and transitive dependencies**
+Both problems stem from the diff-based file detection used during installation: the extension determines which files a library installed by comparing the board filesystem before and after running `upy-package`.
+
+- **Shared dependencies:** If lib1 and lib2 both depend on lib3, lib3 is only recorded in lib1's manifest entry (the first installer). Uninstalling lib1 removes lib3 from the board even though lib2 still needs it. A correct fix would require reference counting per file.
+
+- **Transitive dependencies and code support:** If lib1 installs lib3 as a dependency, lib3 gets no manifest entry and therefore no code support. If the user later tries to install lib3 explicitly to generate code support, the diff detects no new files (they already exist) and creates no manifest entry. Code support for lib3 remains unavailable.
+
+A long-term fix requires explicit dependency tracking in the manifest so that transitively installed libraries are recorded with their own entries.
 
