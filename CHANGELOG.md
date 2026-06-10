@@ -1,9 +1,5 @@
-# Change Log
+# Beta finished
 
-All notable changes to the "beta-micropython-for-arduino" extension will be documented in this file.
+uninstall this extension
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+Check out Extension: MicroPython for Arduino
