@@ -19,64 +19,6 @@
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
-  "contributes": {
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "micropython-arduino",
-          "title": "MicroPython for Arduino",
-          "icon": "media/icon.svg"
-        }
-      ]
-    },
-    "views": {
-      "micropython-arduino": [
-        {
-          "type": "webview",
-          "id": "micropython-arduino.sidebar",
-          "name": "MicroPython for Arduino",
-          "icon": "media/icon.svg",
-          "retainContextWhenHidden": true
-        }
-      ]
-    },
-    "commands": [
-      {
-        "command": "mpyArduino.uploadToBoard",
-        "title": "MicroPython: Save File on Board (Ctrl+S)",
-        "icon": "$(save)"
-      }
-    ],
-    "menus": {
-      "editor/title": [
-        {
-          "command": "mpyArduino.uploadToBoard",
-          "when": "resourcePath =~ /\\.board_cache/",
-          "group": "navigation"
-        }
-      ]
-    },
-    "configuration": {
-      "title": "MicroPython for Arduino",
-      "properties": {
-        "beta-micropython-for-arduino.autoInstallBoardCodeSupport": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically install board-specific code support (editor autocompletion and type hints) when a board port is selected."
-        },
-        "beta-micropython-for-arduino.generateCopilotInstructions": {
-          "type": "boolean",
-          "default": true,
-          "description": "Generate a .github/copilot-instructions.md file with MicroPython context for GitHub Copilot."
-        },
-        "beta-micropython-for-arduino.generateClaudeMd": {
-          "type": "boolean",
-          "default": false,
-          "description": "Generate a CLAUDE.md file with MicroPython context for Claude Code."
-        }
-      }
-    }
-  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "package": "npx @vscode/vsce package",
